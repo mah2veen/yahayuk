@@ -3,10 +3,8 @@
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Cek apakah GUI sudah ada
 if playerGui:FindFirstChild("YahayukTeleport") then return end
 
--- Data posisi teleport
 local positions = {
     ["Start"]   = CFrame.new(-674.25, 909.50, -481.76),
     ["Camp 1"]  = CFrame.new(-429.05, 265.50, 788.27),
@@ -17,37 +15,47 @@ local positions = {
     ["Summit"]  = CFrame.new(-614.06, 904.50, -551.25),
 }
 
--- Buat GUI
+-- GUI Setup
 local gui = Instance.new("ScreenGui")
 gui.Name = "YahayukTeleport"
 gui.ResetOnSpawn = false
 gui.Parent = playerGui
 
--- Frame utama
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 280)
-frame.Position = UDim2.new(0, 20, 0.5, -140)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.Size = UDim2.new(0, 220, 0, 320)
+frame.Position = UDim2.new(0, 20, 0.5, -160)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.BorderSizePixel = 0
 frame.Parent = gui
 
--- Layout tombol
 local layout = Instance.new("UIListLayout", frame)
-layout.Padding = UDim.new(0, 5)
+layout.Padding = UDim.new(0, 6)
 layout.FillDirection = Enum.FillDirection.Vertical
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
--- Fungsi buat tombol teleport
-local function createButton(name, cf)
+-- RGB Animation Function
+local function animateRGB(button)
+    local hue = 0
+    while true do
+        hue = (hue + 0.01) % 1
+        button.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
+        wait(0.03)
+    end
+end
+
+-- Create Buttons
+for name, cf in pairs(positions) do
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 180, 0, 30)
+    btn.Size = UDim2.new(0, 200, 0, 32)
     btn.Text = name
-    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 16
+    btn.BorderSizePixel = 0
     btn.Parent = frame
+
+    coroutine.wrap(function() animateRGB(btn) end)()
 
     btn.MouseButton1Click:Connect(function()
         local char = player.Character or player.CharacterAdded:Wait()
@@ -58,14 +66,14 @@ local function createButton(name, cf)
     end)
 end
 
--- Buat semua tombol dari data
-for name, cf in pairs(positions) do
-    createButton(name, cf)
-end
-
--- Pastikan GUI tetap muncul saat respawn
-player.CharacterAdded:Connect(function()
-    if not playerGui:FindFirstChild("YahayukTeleport") then
-        gui.Parent = playerGui
-    end
-end)
+-- Watermark Mahveen
+local watermark = Instance.new("TextLabel")
+watermark.Size = UDim2.new(0, 200, 0, 20)
+watermark.Position = UDim2.new(0, 10, 1, -25)
+watermark.Text = "Mahveen ✦"
+watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
+watermark.Font = Enum.Font.GothamSemibold
+watermark.TextSize = 14
+watermark.BackgroundTransparency = 1
+watermark.TextXAlignment = Enum.TextXAlignment.Right
+watermark.Parent = frame
